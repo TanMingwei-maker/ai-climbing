@@ -1,0 +1,11 @@
+/data/
+/outputs/
+.DS_Store
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.venv/
+venv/
