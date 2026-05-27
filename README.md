@@ -28,11 +28,14 @@ ai-climbing/
 │  ├─ annotations/
 │  └─ videos/
 ├─ outputs/
+├─ examples/
+│  └─ route_context.sample.json
 ├─ src/ai_climbing/
 │  ├─ cli.py
 │  ├─ metrics.py
 │  ├─ move_sequence.py
 │  ├─ pose_pipeline.py
+│  ├─ route_context.py
 │  └─ rules.py
 └─ tests/
 ```
@@ -67,11 +70,20 @@ python -m ai_climbing.cli data/videos/demo.mp4
 .venv/bin/python -m ai_climbing.cli data/videos/demo.mp4
 ```
 
+如果你已经有墙面/路线点位标定文件，也可以附带传入：
+
+```bash
+.venv/bin/python -m ai_climbing.cli \
+  data/videos/demo.mp4 \
+  --route-context examples/route_context.sample.json
+```
+
 执行后会在 `outputs/` 下生成：
 
 - `*.annotated.mp4`：叠加骨架和基础指标的视频
 - `*.annotated.mp4` 现在还会额外显示候选点编号、四肢当前附着状态和最近的换点事件
 - `*.analysis.json`：分析摘要、动作建议、候选岩点和动作序列
+- 如果传入 `--route-context`，输出里还会包含 `route_context`，并为部分候选点补上 `route_hold_id`
 
 ## 当前分析指标
 
@@ -85,6 +97,38 @@ python -m ai_climbing.cli data/videos/demo.mp4
 - `holds`：从四肢静止片段聚类得到的候选接触点
 - `contacts`：某个肢体在某个候选点上的稳定接触片段
 - `move_sequence`：按时间排序的换手/换脚附着事件
+- `route_context`：可选的墙面/路线标定信息
+- `route_move_sequence`：优先使用真实路线点 ID 的动作序列；如果某个点未映射，则回退到候选点 ID
+- `phase_segments`：基于 `route_move_sequence + contacts` 切出的动作阶段，当前提供 `start / transition / finish`
+
+## 路线标定文件格式
+
+示例文件见 [route_context.sample.json](file:///Users/tan/Desktop/ai-climbing/examples/route_context.sample.json)。
+
+```json
+{
+  "wall": {
+    "name": "Demo Wall",
+    "angle_deg": 10
+  },
+  "route": {
+    "name": "Blue Demo"
+  },
+  "holds": [
+    { "id": "S1", "x": 0.41, "y": 0.75, "role": "start" },
+    { "id": "H1", "x": 0.48, "y": 0.61 },
+    { "id": "T1", "x": 0.48, "y": 0.10, "role": "top" }
+  ]
+}
+```
+
+说明：
+
+- `x` 和 `y` 使用相对于视频画面的归一化坐标，范围通常是 `0.0 ~ 1.0`
+- `id` 是你希望最终在视频和 JSON 中看到的真实路线点名称
+- `role` 是可选字段，可用于标记 `start`、`top` 等语义
+- 当标定命中时，`holds`、`contacts`、`route_move_sequence` 都会附带 `route_hold_id`
+- 阶段切分会优先利用 `role=start/top/finish`；如果没有这些标注，则退回到基于事件分位数的启发式切分
 
 说明：
 

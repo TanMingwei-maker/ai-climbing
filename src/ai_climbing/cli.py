@@ -15,6 +15,11 @@ def build_parser() -> argparse.ArgumentParser:
         default=Path("outputs"),
         help="输出目录，默认是 outputs",
     )
+    parser.add_argument(
+        "--route-context",
+        type=Path,
+        help="可选的路线标定 JSON，用于将候选点映射到真实路线点",
+    )
     return parser
 
 
@@ -26,13 +31,21 @@ def main() -> None:
     analyzer = ClimbingPoseAnalyzer()
     output_video = args.output_dir / f"{args.input.stem}.annotated.mp4"
     output_json = args.output_dir / f"{args.input.stem}.analysis.json"
-    result = analyzer.analyze_video(args.input, output_video, output_json)
+    result = analyzer.analyze_video(
+        args.input,
+        output_video,
+        output_json,
+        route_context_path=args.route_context,
+    )
 
     print("分析完成")
     print(f"总帧数: {result.total_frames}")
     print(f"成功分析帧数: {result.analyzed_frames}")
     print(f"标注视频: {output_video}")
     print(f"分析结果: {output_json}")
+    matched_count = sum(1 for hold in result.holds if hold.route_hold_id)
+    if args.route_context:
+        print(f"已映射路线点: {matched_count}/{len(result.holds)}")
     print("建议:")
     for item in result.feedback:
         print(f"- {item.title}: {item.detail}")

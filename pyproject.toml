@@ -8,6 +8,7 @@ dependencies = [
   "mediapipe==0.10.14",
   "numpy>=1.26.0",
   "opencv-python>=4.10.0.84",
+  "pillow>=12.2.0",
 ]
 
 [project.optional-dependencies]
@@ -25,3 +26,8 @@ packages = ["src/ai_climbing"]
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 testpaths = ["tests"]
+
+[tool.uv.workspace]
+members = [
+    "api",
+]

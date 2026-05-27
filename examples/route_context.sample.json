@@ -1,0 +1,16 @@
+{
+  "wall": {
+    "name": "Demo Wall",
+    "angle_deg": 10
+  },
+  "route": {
+    "name": "Blue Demo"
+  },
+  "holds": [
+    { "id": "S1", "x": 0.41, "y": 0.75, "role": "start" },
+    { "id": "S2", "x": 0.54, "y": 0.86, "role": "start" },
+    { "id": "H1", "x": 0.48, "y": 0.61 },
+    { "id": "H2", "x": 0.67, "y": 0.62 },
+    { "id": "T1", "x": 0.48, "y": 0.10, "role": "top" }
+  ]
+}

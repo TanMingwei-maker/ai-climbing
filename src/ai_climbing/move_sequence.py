@@ -36,6 +36,11 @@ class Hold:
     source: str
     usage_count: int
     limbs: list[str] = field(default_factory=list)
+    route_hold_id: str | None = None
+    route_role: str | None = None
+    route_x: float | None = None
+    route_y: float | None = None
+    match_distance: float | None = None
 
 
 @dataclass(slots=True)
@@ -46,6 +51,9 @@ class ContactSegment:
     end_frame: int
     center_x: float
     center_y: float
+    route_hold_id: str | None = None
+    route_role: str | None = None
+    sequence_hold_id: str | None = None
 
 
 @dataclass(slots=True)
@@ -54,6 +62,9 @@ class MoveEvent:
     limb: str
     hold_id: str
     event_type: str
+    route_hold_id: str | None = None
+    route_role: str | None = None
+    sequence_hold_id: str | None = None
 
 
 @dataclass(slots=True)
